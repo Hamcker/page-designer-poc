@@ -1,13 +1,13 @@
-import { Element } from "./element-defintions/element";
 import { Guid } from "guid-typescript";
+import { ToolboxElement } from "./toolbox-element";
 
-export class RealElement {
+export class PageElement {
    uId: string;
-   definition: Element;
+   definition: ToolboxElement;
    properties?: { [i: string]: any };
-   children?: RealElement[];
+   children?: PageElement[];
 
-   constructor(definition: Element, ...children: RealElement[]) {
+   constructor(definition: ToolboxElement, ...children: PageElement[]) {
       this.uId = Guid.create().toString();
       this.definition = definition;
       this.children = children ?? [];

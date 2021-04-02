@@ -1,9 +1,8 @@
-import { CdkDrag, CdkDragDrop, CdkDragEnter, CdkDragExit, CdkDragSortEvent, CdkDropList, copyArrayItem } from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { Element } from 'src/app/code-base/element-defintions/element';
-import { Guid } from 'guid-typescript';
-import { RealElement } from 'src/app/code-base/real-element';
+import { PageElement } from 'src/app/code-base/page-element';
+import { ToolboxElement } from 'src/app/code-base/toolbox-element';
 
 @Component({
    selector: 'app-element',
@@ -12,13 +11,13 @@ import { RealElement } from 'src/app/code-base/real-element';
 })
 export class ElementComponent implements OnInit {
 
-   @Input('element') element: RealElement;
-   @Input() parentItem?: RealElement;
+   @Input('element') element: PageElement;
+   @Input() parentItem?: PageElement;
 
    @Input() set connectedDropListsIds(ids: string[]) { this.allDropListsIds = ids; }
    get connectedDropListsIds(): string[] { return this.allDropListsIds.filter(id => id !== this.element.uId); }
 
-   @Output() itemDrop: EventEmitter<CdkDragDrop<RealElement>>;
+   @Output() itemDrop: EventEmitter<CdkDragDrop<PageElement>>;
    @Output() layoutChange = new EventEmitter();
 
    allDropListsIds: string[];
@@ -35,12 +34,12 @@ export class ElementComponent implements OnInit {
 
 
    canEnter() {
-      return (element: CdkDrag<Element>, container: CdkDropList<RealElement>) => {
+      return (element: CdkDrag<ToolboxElement>, container: CdkDropList<PageElement>) => {
          return this.canBeDropedFromToolbox(container.data, element.data);
       };
    }
 
-   onDragDrop(event: CdkDragDrop<RealElement, RealElement>): void {
+   onDragDrop(event: CdkDragDrop<PageElement, PageElement>): void {
       this.itemDrop.emit(event);
    }
 
@@ -51,7 +50,7 @@ export class ElementComponent implements OnInit {
    }
 
 
-   private canBeDropedFromToolbox(container: RealElement, addingItem: Element): boolean {
+   private canBeDropedFromToolbox(container: PageElement, addingItem: ToolboxElement): boolean {
       const parentAccepts = container.definition.childrenTypes !== false && container.definition.childrenTypes.includes(addingItem.name);
       const childAccepts = addingItem.parentTypes !== false && addingItem.parentTypes.includes(container.definition.name);
 
