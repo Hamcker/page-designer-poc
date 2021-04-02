@@ -1,7 +1,7 @@
 <div class="p-2 w-100 h-100">
   <div class="d-flex border rounded h-100" cdkDropListGroup>
     <app-toolbox [allDropListsIds]="allDropListsIds"></app-toolbox>
-    <app-elements-area class="flex-fill" (dropListChange)="allDropListsIds = $event"></app-elements-area>
+    <app-elements-area class="flex-fill" (dropListChange)="allDropListsIds = $event" (layoutChange)="onLayoutJsonChange($event)"></app-elements-area>
   </div>
   <!-- {{allDropListsIds}} -->
 </div>

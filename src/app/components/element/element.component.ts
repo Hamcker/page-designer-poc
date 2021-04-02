@@ -19,6 +19,7 @@ export class ElementComponent implements OnInit {
    get connectedDropListsIds(): string[] { return this.allDropListsIds.filter(id => id !== this.element.uId); }
 
    @Output() itemDrop: EventEmitter<CdkDragDrop<RealElement>>;
+   @Output() layoutChange = new EventEmitter();
 
    allDropListsIds: string[];
    get dragDisabled(): boolean { return !this.parentItem; }
@@ -34,42 +35,30 @@ export class ElementComponent implements OnInit {
 
 
    canEnter() {
-      return (drag: CdkDrag<Element>, drop: CdkDropList<Element>) => {
-         // console.log('canEneter', element, drag, drop);
-         return true;
+      return (element: CdkDrag<Element>, container: CdkDropList<RealElement>) => {
+         return this.canBeDropedFromToolbox(container.data, element.data);
       };
-   }
-
-   onEnter($event: CdkDragEnter<Element[]>) {
-      console.log('onEnter', $event);
-   }
-   onExit($event: CdkDragExit<Element[]>) {
-      console.log('onExit', $event);
-   }
-   onDrop(event: CdkDragDrop<Element[]>) {
-      console.log('onDrop', event);
-      if (event.previousContainer === event.container) return;
-
-      copyArrayItem(event.previousContainer.data,
-         event.container.data,
-         event.previousIndex,
-         event.currentIndex);
-
-      this.element.realChildren.push({
-         uId: Guid.create().toString(),
-         definition: event.item.data,
-         // children: [],
-         realChildren: [],
-      });
-
-   }
-
-
-   onSort($event: CdkDragSortEvent<Element[]>) {
-      // console.log('onSort', bodyElement, $event);
    }
 
    onDragDrop(event: CdkDragDrop<RealElement, RealElement>): void {
       this.itemDrop.emit(event);
+   }
+
+   onRemoveClick() {
+      const index = this.parentItem.children.findIndex(x => x.uId === this.element.uId);
+      this.parentItem.children.splice(index, 1);
+      this.layoutChange.emit();
+   }
+
+
+   private canBeDropedFromToolbox(container: RealElement, addingItem: Element): boolean {
+      const parentAccepts = container.definition.childrenTypes !== false && container.definition.childrenTypes.includes(addingItem.name);
+      const childAccepts = addingItem.parentTypes !== false && addingItem.parentTypes.includes(container.definition.name);
+
+      return parentAccepts && childAccepts;
+   }
+
+   onLayoutChange() {
+      this.layoutChange.emit();
    }
 }

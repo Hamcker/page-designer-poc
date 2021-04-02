@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@ang
 import { EL_BODY, EL_COL, EL_ROW, Element } from 'src/app/code-base/element-defintions/element';
 
 import { Guid } from 'guid-typescript';
-import { RealElement } from 'src/app/code-base/real-element';
+import { RealElement, SerializedRealElement } from 'src/app/code-base/real-element';
 import { remove } from 'lodash-es';
 import { take } from 'rxjs/operators';
 import { timer } from 'rxjs';
@@ -24,6 +24,7 @@ export class ElementsAreaComponent implements OnInit {
    }
 
    @Output() dropListChange = new EventEmitter<string[]>();
+   @Output() layoutChange = new EventEmitter<string>();
 
    constructor() {
       this.rootElement = new RealElement(EL_BODY);
@@ -34,13 +35,15 @@ export class ElementsAreaComponent implements OnInit {
    }
 
    public onDragDrop(event: CdkDragDrop<RealElement | Element>) {
+      if (!event.item.data || !event.container.data) return;
+
       if (event.previousContainer.id === 'toolbox') {
          const ieEvent = event as CdkDragDrop<Element>;
          const addingItem = event.item.data as Element;
          const container = event.container.data as RealElement;
 
          if (this.canBeDropedFromToolbox(container, addingItem)) {
-            (<RealElement>event.container.data).realChildren.push(new RealElement(ieEvent.item.data));
+            (<RealElement>event.container.data).children.push(new RealElement(ieEvent.item.data));
          }
 
       } else {
@@ -49,12 +52,12 @@ export class ElementsAreaComponent implements OnInit {
 
          if (this.canBeDropped(reEvent)) {
             const movingItem: RealElement = reEvent.item.data;
-            reEvent.container.data.realChildren.push(movingItem);
-            reEvent.previousContainer.data.realChildren =
-               reEvent.previousContainer.data.realChildren.filter((child) => child.uId !== movingItem.uId);
+            reEvent.container.data.children.push(movingItem);
+            reEvent.previousContainer.data.children =
+               reEvent.previousContainer.data.children.filter((child) => child.uId !== movingItem.uId);
          } else {
             moveItemInArray(
-               reEvent.container.data.realChildren,
+               reEvent.container.data.children,
                reEvent.previousIndex,
                reEvent.currentIndex
             );
@@ -62,11 +65,12 @@ export class ElementsAreaComponent implements OnInit {
       }
 
       this.dropListChange.emit(this.connectedDropListsIds);
+      this.generateLayoutJson();
    }
 
    private getIdsRecursive(item: RealElement): string[] {
       let ids = [item.uId];
-      item.realChildren.forEach(childItem => { ids = ids.concat(this.getIdsRecursive(childItem)) });
+      item.children.forEach(childItem => { ids = ids.concat(this.getIdsRecursive(childItem)) });
       return ids;
    }
 
@@ -84,8 +88,8 @@ export class ElementsAreaComponent implements OnInit {
    }
 
    private hasChild(parentItem: RealElement, childItem: RealElement): boolean {
-      const hasChild = parentItem.realChildren.some((item) => item.uId === childItem.uId);
-      return hasChild ? true : parentItem.realChildren.some((item) => this.hasChild(item, childItem));
+      const hasChild = parentItem.children.some((item) => item.uId === childItem.uId);
+      return hasChild ? true : parentItem.children.some((item) => this.hasChild(item, childItem));
    }
 
    private canBeDropedFromToolbox(container: RealElement, addingItem: Element): boolean {
@@ -93,5 +97,23 @@ export class ElementsAreaComponent implements OnInit {
       const childAccepts = addingItem.parentTypes !== false && addingItem.parentTypes.includes(container.definition.name);
 
       return parentAccepts && childAccepts;
+   }
+
+   generateLayoutJson() {
+      const layout = this.generateElementJson(this.rootElement);
+      const layoutJson = JSON.stringify(layout);
+      this.layoutChange.emit(layoutJson);
+   }
+
+   generateElementJson(element: RealElement): SerializedRealElement {
+      const outlet: SerializedRealElement = { type: element.definition.name, properties: element.properties };
+
+      outlet.children = element.children.map(x => this.generateElementJson(x));
+
+      return outlet;
+   }
+
+   onLayoutChange() {
+      this.generateLayoutJson();
    }
 }

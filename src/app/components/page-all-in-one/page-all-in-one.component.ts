@@ -10,11 +10,16 @@ import { timer } from 'rxjs';
 })
 export class PageAllInOneComponent implements OnInit, AfterViewInit {
 
+   layoutJson: string;
+
    showEditors = false;
 
    editors = {
       generatedLayout: {
-         options: {},
+         options: {
+            language: 'json',
+            tabSize: 2,
+         },
          ref: null,
       },
       dataContext: {
@@ -45,5 +50,9 @@ export class PageAllInOneComponent implements OnInit, AfterViewInit {
       // ref.layout();
    }
 
+   onLayoutJsonChange(json: string) {
+      this.layoutJson = json;
+      timer(50).pipe(take(1)).subscribe(_ => this.editors.generatedLayout.ref.getAction('editor.action.formatDocument').run());
 
+   }
 }

@@ -9,23 +9,29 @@
   [cdkDropListConnectedTo]="allDropListsIds" (cdkDropListDropped)="onDragDrop($event)">
 
   <div cdkDrag [id]="element.uId" [cdkDragData]="element" [cdkDragDisabled]="dragDisabled">
-    <div title="Drag this item with children" class="item-drag-handle" cdkDragHandle>
-      {{ element.definition.name }}
-
-      <i *ngIf="!dragDisabled" class="las la-grip-vertical"> </i>
+    <div class="d-flex align-items-center">
+      <div title="Drag this item with children" class="item-drag-handle" cdkDragHandle>
+        {{ element.definition.name }}
+        <i *ngIf="!dragDisabled" class="las la-grip-vertical"> </i>
+      </div>
+      <div class="flex-fill"></div>
+      <i class="las la-times cursor-pointer" (click)="onRemoveClick()" *ngIf="!dragDisabled"></i>
     </div>
 
     <div class="item-drag-preview" *cdkDragPreview>
-      {{ element.definition.name }} with {{ element.realChildren.length }} child
+      {{ element.definition.name }} with {{ element.children.length }} child
       item(s)
     </div>
   </div>
 
-  <ul cdkDropList class="item-dropzone" [id]="element.uId" [cdkDropListConnectedTo]="connectedDropListsIds" [cdkDropListData]="element"
-    (cdkDropListDropped)="onDragDrop($event)">
-    <li *ngFor="let subItem of element.realChildren">
-      <app-element [element]="subItem" [parentItem]="element" [connectedDropListsIds]="allDropListsIds" (itemDrop)="onDragDrop($event)">
-      </app-element>
-    </li>
-  </ul>
+  <ng-container *ngIf="element.definition.childrenTypes">
+    <ul cdkDropList class="item-dropzone" [id]="element.uId" [cdkDropListConnectedTo]="connectedDropListsIds" [cdkDropListData]="element"
+      (cdkDropListDropped)="onDragDrop($event)" [cdkDropListEnterPredicate]="canEnter()">
+      <li *ngFor="let subItem of element.children">
+        <app-element [element]="subItem" [parentItem]="element" [connectedDropListsIds]="allDropListsIds" (itemDrop)="onDragDrop($event)"
+          (layoutChange)="onLayoutChange()">
+        </app-element>
+      </li>
+    </ul>
+  </ng-container>
 </div>

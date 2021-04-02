@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 
 @Component({
    selector: 'app-view-designer',
@@ -8,10 +8,16 @@ import { Component, OnInit } from '@angular/core';
 export class ViewDesignerComponent implements OnInit {
 
    allDropListsIds: string[];
+   layoutJson: string;
+
+   @Output() layoutJsonChange = new EventEmitter<string>();
 
    constructor() { }
 
    ngOnInit(): void {
    }
 
+   onLayoutJsonChange(json: string) {
+      this.layoutJsonChange.emit(json);
+   }
 }

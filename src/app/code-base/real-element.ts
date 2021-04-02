@@ -5,11 +5,17 @@ export class RealElement {
    uId: string;
    definition: Element;
    properties?: { [i: string]: any };
-   realChildren?: RealElement[];
+   children?: RealElement[];
 
    constructor(definition: Element, ...children: RealElement[]) {
       this.uId = Guid.create().toString();
       this.definition = definition;
-      this.realChildren = children ?? [];
+      this.children = children ?? [];
    }
+}
+
+export class SerializedRealElement {
+   type: string;
+   properties?: { [i: string]: any };
+   children?: SerializedRealElement[];
 }
