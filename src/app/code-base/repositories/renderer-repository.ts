@@ -8,7 +8,7 @@ export interface IRenderer {
 
 
 export class RendererRepository {
-   static repository: { [i: string]: any };
+   static repository: { [i: string]: IRenderer } = {};
 
    static register(renderer: IRenderer): void {
       if (!renderer?.toolboxElement?.name || !renderer?.componentType) return;

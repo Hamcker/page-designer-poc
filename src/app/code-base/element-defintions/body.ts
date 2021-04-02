@@ -1,4 +1,4 @@
-import { ToolboxElement } from "../repositories/element-repository";
+import { ToolboxElement } from "../toolbox-element";
 
 export const EL_BODY: ToolboxElement = new ToolboxElement({
    name: 'Body',

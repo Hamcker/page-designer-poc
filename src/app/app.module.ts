@@ -6,7 +6,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { ElementComponent } from './components/element/element.component';
-import { ElementDirective } from './directives/element.directive';
 import { ElementsAreaComponent } from './components/elements-area/elements-area.component';
 import { NgModule } from '@angular/core';
 import { PageAllInOneComponent } from './components/page-all-in-one/page-all-in-one.component';
@@ -31,7 +30,6 @@ const monacoConfig: NgxMonacoEditorConfig = {
       ViewViewerComponent,
       ToolboxComponent,
       ElementsAreaComponent,
-      ElementDirective,
       ElementComponent,
       RendererBodyComponent,
       RendererRowComponent,

@@ -1,14 +1,10 @@
 import { CdkDragEnter, CdkDragExit } from '@angular/cdk/drag-drop';
 import { Component, Input, OnInit } from '@angular/core';
-import { EL_BUTTON, EL_COL, EL_ROW, Element } from 'src/app/code-base/element-defintions/element';
 
-import { remove } from "lodash-es";
-
-interface IElementWrapper {
-   isTemporaryAdded?: boolean;
-}
-
-type TToolboxItem = Element & IElementWrapper;
+import { EL_BUTTON } from 'src/app/code-base/element-defintions/button';
+import { EL_COL } from 'src/app/code-base/element-defintions/col';
+import { EL_ROW } from 'src/app/code-base/element-defintions/row';
+import { ToolboxElement } from 'src/app/code-base/toolbox-element';
 
 @Component({
    selector: 'app-toolbox',
@@ -17,7 +13,7 @@ type TToolboxItem = Element & IElementWrapper;
 })
 export class ToolboxComponent implements OnInit {
 
-   elements: TToolboxItem[] = [
+   elements: ToolboxElement[] = [
       EL_ROW,
       EL_COL,
       EL_BUTTON,
@@ -30,14 +26,4 @@ export class ToolboxComponent implements OnInit {
    ngOnInit(): void {
    }
 
-   onEnter(event: CdkDragEnter<TToolboxItem[]>) {
-      console.log('onToolboxEnter', event);
-      // remove(event.container.data, x => x.isTemporaryAdded)
-   }
-
-   onExit(event: CdkDragExit<any>) {
-      console.log('onToolboxExit', event);
-      // const index = event.container.getSortedItems().findIndex(x => x.data.name === event.item.data.name);
-      // this.elements.splice(index + 1, 0, { ...event.item.data, isTemporaryAdded: true });
-   }
 }

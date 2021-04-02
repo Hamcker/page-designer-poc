@@ -1,1 +1,9 @@
-<p>renderer-body works!</p>
+<section class="pd-body">
+
+  <ng-container *ngFor="let subItem of children">
+    <app-element [element]="subItem" [parentItem]="element" [connectedDropListsIds]="connectedDropListsIds" (itemDrop)="onDragDrop($event)"
+      (layoutChange)="onLayoutChange()">
+    </app-element>
+  </ng-container>
+
+</section>

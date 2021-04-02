@@ -1,20 +1,14 @@
-ul,
-li {
-   margin: 10px 0;
-   padding: 10px;
-   background-color: white;
-   border-radius: 4px;
-   list-style: none;
-}
-
-li {
-   border: 1px solid black;
+.parent {
+   border: 1px solid #999;
 }
 
 .item {
    &-dropzone {
+      background-color: white;
       border: 1px dashed grey;
       min-height: 20px;
+      padding: 2px;
+      border-radius: 3px;
 
       &.parent {
          border: none;
@@ -25,12 +19,13 @@ li {
       &-handle {
          display: inline-flex;
          align-items: center;
+         font-size: 10px;
       }
 
       &-preview {
          box-sizing: border-box;
          border-radius: 4px;
-         padding: 10px;
+         padding: 5px;
          box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
          background-color: white;
       }
