@@ -1,0 +1,11 @@
+<div class="p-2 w-100 h-100">
+  <div class="d-flex flex-column border rounded p-2 h-100" cdkDropList cdkDropListSortingDisabled id="toolbox"
+    [cdkDropListConnectedTo]="allDropListsIds" (cdkDropListExited)="onExit($event)" (cdkDropListEntered)="onEnter($event)"
+    [cdkDropListData]="elements">
+
+    <div class="element p-2 border rounded d-flex flex-column align-items-center mb-2" *ngFor="let el of elements" cdkDrag [cdkDragData]="el">
+      <i class="{{el.icon}} mb-1"></i>
+      {{el.name}}
+    </div>
+  </div>
+</div>

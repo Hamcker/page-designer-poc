@@ -1,0 +1,20 @@
+<div class="d-flex flex-column">
+  <app-view-designer style="min-height: 80vh;"></app-view-designer>
+
+  <div class="d-flex">
+    <div class="p-1 flex-fill flex-shrink-0" style="max-width: 33%; height: 300px;">
+      <h5>Generated Layout JSON (<i class="rec"></i> Live) </h5>
+      <ngx-monaco-editor [options]="editors.generatedLayout.options" (onInit)="setEditor('generatedLayout', $event)" class="w-100 h-100">
+      </ngx-monaco-editor>
+
+    </div>
+    <div class="p-1 flex-fill flex-shrink-0" style="max-width: 33%; height: 300px;">
+      <h5>Data Context (<i class="rec"></i> Live)</h5>
+      <ngx-monaco-editor [options]="editors.dataContext.options" (onInit)="setEditor('dataContext', $event)" class="w-100 h-100"></ngx-monaco-editor>
+    </div>
+    <div class="p-1 flex-fill flex-shrink-0" style="max-width: 33%;height: 300px;">
+      <h5>View Context (<i class="rec"></i> Live)</h5>
+      <ngx-monaco-editor [options]="editors.viewContext.options" (onInit)="setEditor('viewContext', $event)" class="w-100 h-100"></ngx-monaco-editor>
+    </div>
+  </div>
+</div>
