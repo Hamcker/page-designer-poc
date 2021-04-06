@@ -5,7 +5,7 @@
 
 </div> -->
 
-<div cdkDropList class="item-dropzone parent rounded w-100" [id]="parentItemId" [cdkDropListData]="parentItem"
+<div class="item-dropzone parent rounded w-100" cdkDropList [id]="parentItemId" [cdkDropListData]="parentItem"
   [cdkDropListConnectedTo]="allDropListIds" (cdkDropListDropped)="onDragDrop($event)" [cdkDropListEnterPredicate]="canEnter()">
 
   <div cdkDrag [id]="element.uId" [cdkDragData]="element" [cdkDragDisabled]="dragDisabled">
@@ -24,7 +24,7 @@
   </div>
 
   <ng-container *ngIf="element.definition.childrenTypes; else childRenderer">
-    <div cdkDropList class="item-dropzone" [id]="element.uId" [cdkDropListConnectedTo]="connectedDropListsIds" [cdkDropListData]="element"
+    <div class="item-dropzone" cdkDropList [id]="element.uId" [cdkDropListConnectedTo]="connectedDropListsIds" [cdkDropListData]="element"
       (cdkDropListDropped)="onDragDrop($event)" [cdkDropListEnterPredicate]="canEnter()">
 
       <div #childrenHost></div>

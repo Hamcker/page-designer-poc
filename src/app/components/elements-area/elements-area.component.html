@@ -1,6 +1,9 @@
 <div class="p-2 w-100 h-100">
 
-  <app-element [element]="rootElement" [connectedDropListsIds]="connectedDropListsIds" (itemDrop)="onDragDrop($event)"
-    (layoutChange)="onLayoutChange()"></app-element>
+  <renderer-outlet [element]="rootElement" [connectedDropListsIds]="connectedDropListsIds" (layoutChange)="onLayoutChange()" renderMode="design">
+  </renderer-outlet>
+
+  <!-- <app-element [element]="rootElement" [connectedDropListsIds]="connectedDropListsIds" (itemDrop)="onDragDrop($event)"
+    (layoutChange)="onLayoutChange()"></app-element> -->
 
 </div>

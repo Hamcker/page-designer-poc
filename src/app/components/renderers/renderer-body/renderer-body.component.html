@@ -1,9 +1,16 @@
-<section class="pd-body">
+<ng-container *renderer-view="'design'">
+  body grip
+  <section class="pd-body drop-host" drop-zone>
 
-  <ng-container *ngFor="let subItem of children">
-    <app-element [element]="subItem" [parentItem]="element" [connectedDropListsIds]="connectedDropListsIds" (itemDrop)="onDragDrop($event)"
-      (layoutChange)="onLayoutChange()">
-    </app-element>
-  </ng-container>
+    <renderer-outlet *ngFor="let child of children" [element]="child" [connectedDropListsIds]="allDropListsIds | async" [renderMode]="renderMode">
+    </renderer-outlet>
+
+  </section>
+</ng-container>
+
+<section class="pd-body" *renderer-view="'run'">
+  run
+  <renderer-outlet *ngFor="let child of children" [element]="child" [connectedDropListsIds]="allDropListsIds | async" [renderMode]="renderMode">
+  </renderer-outlet>
 
 </section>

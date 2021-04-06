@@ -9,3 +9,33 @@ body {
 .cursor-pointer {
    cursor: pointer;
 }
+
+.drop-zone {
+   border: 1px dashed lightgray;
+   border-radius: 4px;
+   padding: 5px;
+}
+
+.drop-host {
+   display: flex;
+   align-items: stretch;
+   justify-content: stretch;
+   flex-flow: column nowrap;
+
+   > * {
+      flex: 1;
+   }
+
+   renderer-drop-zone {
+      display: flex;
+      flex-flow: column;
+   }
+
+   &-horizontal {
+      flex-flow: row nowrap;
+
+      renderer-drop-zone {
+         flex-flow: row;
+      }
+   }
+}

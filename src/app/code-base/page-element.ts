@@ -1,4 +1,5 @@
 import { Guid } from "guid-typescript";
+import { TemplateRef } from "@angular/core";
 import { ToolboxElement } from "./toolbox-element";
 
 export class PageElement {
@@ -6,9 +7,14 @@ export class PageElement {
    definition: ToolboxElement;
    properties?: { [i: string]: any };
    children?: PageElement[];
+   templateRefs?: { [i: string]: TemplateRef<any> };
 
-   constructor(definition: ToolboxElement, ...children: PageElement[]) {
-      this.uId = Guid.create().toString();
+   constructor(parentElement: PageElement, definition: ToolboxElement, ...children: PageElement[]) {
+      if (!parentElement) {
+         this.uId = 'pd-root'
+      } else {
+         this.uId = parentElement.uId + '-' + parentElement.children.length;
+      }
       this.definition = definition;
       this.children = children ?? [];
    }

@@ -1,0 +1,14 @@
+<div cdkDrag [id]="element.uId" [cdkDragData]="element" [cdkDragDisabled]="dragDisabled">
+  <div class="d-flex align-items-center">
+    <div class="item-drag-handle" cdkDragHandle>
+      <i *ngIf="!dragDisabled" class="las la-braille"> </i>
+      {{ element.definition.name }}
+    </div>
+    <div class="flex-fill"></div>
+    <i class="las la-times cursor-pointer" (click)="onRemoveClick()" *ngIf="!dragDisabled"></i>
+  </div>
+
+  <div class="item-drag-preview" *cdkDragPreview>
+    {{ element.definition.name }} with {{ element.children.length }} child item(s)
+  </div>
+</div>

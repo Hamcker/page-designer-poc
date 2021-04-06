@@ -5,14 +5,19 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { DragDropModule } from "@angular/cdk/drag-drop";
+import { DropZoneDirective } from './directives/drop-zone.directive';
 import { ElementComponent } from './components/element/element.component';
 import { ElementsAreaComponent } from './components/elements-area/elements-area.component';
 import { NgModule } from '@angular/core';
 import { PageAllInOneComponent } from './components/page-all-in-one/page-all-in-one.component';
 import { RendererBodyComponent } from './components/renderers/renderer-body/renderer-body.component';
 import { RendererButtonComponent } from './components/renderers/renderer-button/renderer-button.component';
+import { RendererChildrenComponent } from './components/renderer-children/renderer-children.component';
 import { RendererColComponent } from './components/renderers/renderer-col/renderer-col.component';
+import { RendererDragHandlerComponent } from './components/renderer-drag-handler/renderer-drag-handler.component';
+import { RendererOutletComponent } from './components/renderer-outlet/renderer-outlet.component';
 import { RendererRowComponent } from './components/renderers/renderer-row/renderer-row.component';
+import { RendererViewDirective } from './directives/renderer-view.directive';
 import { ToolboxComponent } from './components/toolbox/toolbox.component';
 import { ViewDesignerComponent } from './components/view-designer/view-designer.component';
 import { ViewViewerComponent } from './components/view-viewer/view-viewer.component';
@@ -34,7 +39,12 @@ const monacoConfig: NgxMonacoEditorConfig = {
       RendererBodyComponent,
       RendererRowComponent,
       RendererColComponent,
-      RendererButtonComponent
+      RendererButtonComponent,
+      RendererOutletComponent,
+      RendererChildrenComponent,
+      RendererDragHandlerComponent,
+      RendererViewDirective,
+      DropZoneDirective
    ],
    imports: [
       BrowserModule,

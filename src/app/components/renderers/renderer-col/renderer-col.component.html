@@ -1,7 +1,17 @@
-<div class="col pd-col">
-  <ng-container *ngFor="let subItem of children">
-    <app-element [element]="subItem" [parentItem]="element" [connectedDropListsIds]="connectedDropListsIds" (itemDrop)="onDragDrop($event)"
-      (layoutChange)="onLayoutChange()">
-    </app-element>
-  </ng-container>
-</div>
+<ng-container *renderer-view="'design'">
+  <!-- <renderer-drag-handler></renderer-drag-handler> -->
+  column grip
+  <section class="pd-col col drop-host" style="min-height: 50px;" drop-zone>
+
+    <renderer-outlet *ngFor="let child of children" [element]="child" [connectedDropListsIds]="allDropListsIds | async" [renderMode]="renderMode">
+    </renderer-outlet>
+
+  </section>
+</ng-container>
+
+<section class="pd-col col" *renderer-view="'run'">
+
+  <renderer-outlet *ngFor="let child of children" [element]="child" [connectedDropListsIds]="allDropListsIds | async" [renderMode]="renderMode">
+  </renderer-outlet>
+
+</section>
