@@ -3,15 +3,13 @@
   column grip
   <section class="pd-col col drop-host" style="min-height: 50px;" drop-zone>
 
-    <renderer-outlet *ngFor="let child of children" [element]="child" [connectedDropListsIds]="allDropListsIds | async" [renderMode]="renderMode">
-    </renderer-outlet>
+    <renderer-children></renderer-children>
 
   </section>
 </ng-container>
 
 <section class="pd-col col" *renderer-view="'run'">
 
-  <renderer-outlet *ngFor="let child of children" [element]="child" [connectedDropListsIds]="allDropListsIds | async" [renderMode]="renderMode">
-  </renderer-outlet>
+  <renderer-children></renderer-children>
 
 </section>

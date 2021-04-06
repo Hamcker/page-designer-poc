@@ -1,16 +1,24 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, EventEmitter, Host, Injector, Input, OnInit, Optional, Output, SkipSelf, StaticProvider, TemplateRef, Type, ViewChild, ViewContainerRef, ViewRef } from '@angular/core';
-import { INJ_CHILDREN, INJ_DROP_LISTS_OBSERVABLE, INJ_PAGE_ELEMENT, INJ_RENDER_MODE } from 'src/app/code-base/injection-tokens';
+import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, EventEmitter, Host, Injector, Input, OnInit, Optional, Output, QueryList, SkipSelf, StaticProvider, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, ViewRef } from '@angular/core';
 
 import { BaseRenderer } from 'src/app/code-base/base-renderer';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { INJ_PAGE_ELEMENT } from 'src/app/code-base/injection-tokens';
+import { PageDesignService } from 'src/app/services/page-design.service';
 import { PageElement } from 'src/app/code-base/page-element';
 import { RendererRepository } from 'src/app/code-base/repositories/renderer-repository';
 import { TRenderMode } from 'src/app/code-base/types';
 import { filter } from 'rxjs/operators';
-import { BehaviorSubject } from 'rxjs';
+import { ElementsAreaComponent } from '../elements-area/elements-area.component';
+import { DropZoneDirective } from 'src/app/directives/drop-zone.directive';
+import { RendererChildrenComponent } from '../renderer-children/renderer-children.component';
 
 export type Content<T> = string | TemplateRef<T> | Type<T>;
 
-
+export interface ILogicalTreeChange {
+   parent: PageElement;
+   child: PageElement;
+   slot: string
+}
 
 @Component({
    selector: 'renderer-outlet',
@@ -19,25 +27,19 @@ export type Content<T> = string | TemplateRef<T> | Type<T>;
 })
 export class RendererOutletComponent implements OnInit, AfterViewInit {
 
-   #allDropListsIds: string[];
-   #rendererComponentRef: ComponentRef<BaseRenderer>;
-   #allDropListsIds$ = new BehaviorSubject<string[]>([]);
-
    isViewAttached = false;
 
-   @Input() element: PageElement;
-   @Input() parentElement?: PageElement;
-   @Input() renderMode: TRenderMode = 'design';
+   /**
+    * It's called:
+    * 1. from drop-zone.directive when new child is added
+    * 2. from renderer-drag-handler when an element is removed
+    */
+   logicalTreeChange = new EventEmitter<ILogicalTreeChange>(true);
 
-   @Input() set connectedDropListsIds(ids: string[]) {
-      this.#allDropListsIds = ids;
-      this.#allDropListsIds$?.next(ids);
-   }
-   get connectedDropListsIds(): string[] { return this.#allDropListsIds;/*.filter(id => id !== this.element.uId);*/ }
-
-   @Output() layoutChange = new EventEmitter();
+   @Input() pageElement: PageElement;
 
    @ViewChild('dummyVcr', { read: ViewContainerRef }) dummyVcr: ViewContainerRef;
+   @ViewChildren(RendererChildrenComponent) childrenRenderers: QueryList<RendererChildrenComponent>;
 
    constructor(
       private cfr: ComponentFactoryResolver,
@@ -45,34 +47,49 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
       private viewContainerRef: ViewContainerRef,
       private injector: Injector,
       private changeDetectorRef: ChangeDetectorRef,
+      private parentElementsArea: ElementsAreaComponent,
+      private pageDesignService: PageDesignService,
       @SkipSelf() @Host() @Optional() private parentRendererOutlet: RendererOutletComponent,
    ) {
    }
 
    ngOnInit(): void {
+      this.pageDesignService.layoutChange
+         .pipe(filter(_ => !this.pageElement.parent)) // ensure it's root renderer
+         .subscribe(_ => {
+            this.pageDesignService.collectAllDropListsIds(this.pageElement);
+         });
    }
    ngAfterViewInit() {
-      this.redraw();
-      this.changeDetectorRef.detectChanges();
+      // we do it here becuase dummyVcr exists now (can't be done in ngOnInit())
+      this.pageDesignService.renderMode.subscribe(renderMode => this.redraw(renderMode));
    }
 
-   private redraw() {
-      const componentType = RendererRepository.get(this.element.definition.name).componentType;
+
+
+
+
+
+   private redraw(renderMode: TRenderMode) {
+      const componentType = RendererRepository.get(this.pageElement.definition.name).componentType;
 
       const rendererFactory = this.cfr.resolveComponentFactory<BaseRenderer>(componentType);
       const injector = this.getInjector();
 
       // create component
-      this.#rendererComponentRef = rendererFactory.create(injector);
+      const rendererComponentRef = rendererFactory.create(injector);
 
       // handle component's view init just before adding it to view
-      this.#rendererComponentRef.instance.lifecycleEvents.pipe(filter(x => x === 'AfterViewInit')).subscribe(_ => {
-         this.viewContainerRef.createEmbeddedView(this.element.templateRefs[this.renderMode]);
+      rendererComponentRef.instance.lifecycleEvents.pipe(filter(x => x === 'AfterViewInit')).subscribe(_ => {
+         this.viewContainerRef.createEmbeddedView(this.pageElement.templateRefs[renderMode]);
          this.cdr.detectChanges();
       })
 
       // insert to dummy ViewContainerRef first to trigger ngAfterInit and *renderer-body
-      this.dummyVcr.insert(this.#rendererComponentRef.hostView);
+      this.dummyVcr.insert(rendererComponentRef.hostView);
+
+      // trigger change detection (since it's called from ngAfterViewInit())
+      this.changeDetectorRef.detectChanges();
    }
 
 
@@ -85,15 +102,20 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
       } = {
          parent: this.injector,
          providers: [
-            { provide: INJ_PAGE_ELEMENT, useValue: this.element },
-            { provide: INJ_CHILDREN, useValue: this.element.children },
-            { provide: INJ_DROP_LISTS_OBSERVABLE, useValue: this.#allDropListsIds$ },
-            { provide: INJ_RENDER_MODE, useValue: this.renderMode },
+            { provide: INJ_PAGE_ELEMENT, useValue: this.pageElement },
          ]
       }
 
       return Injector.create(options);
    }
+
+   private getIdsRecursive(item: PageElement): string[] {
+      let ids = [item.uId];
+      item.children.forEach(childItem => { ids = ids.concat(this.getIdsRecursive(childItem)) });
+      return ids;
+   }
+
+
 }
 
 // To Render content of type TemplateRef

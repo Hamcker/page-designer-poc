@@ -1,9 +1,8 @@
 <ng-container *renderer-view="'design'">
-  row grip - children: {{children.length}}
+  row grip
   <section class="pd-row row drop-host-horizontal bg-white" style="min-height: 50px;" drop-zone>
 
-    <renderer-outlet *ngFor="let child of children" [element]="child" [connectedDropListsIds]="allDropListsIds | async" [renderMode]="renderMode">
-    </renderer-outlet>
+    <renderer-children></renderer-children>
 
   </section>
 
@@ -13,7 +12,6 @@
 
 <section class="pd-row row" *renderer-view="'run'">
 
-  <renderer-outlet *ngFor="let child of children" [element]="child" [connectedDropListsIds]="allDropListsIds | async" [renderMode]="renderMode">
-  </renderer-outlet>
+  <renderer-children></renderer-children>
 
 </section>

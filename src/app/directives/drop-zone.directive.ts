@@ -1,10 +1,10 @@
 import { Directionality } from '@angular/cdk/bidi';
 import { CdkDrag, CdkDragDrop, CdkDragEnter, CdkDragExit, CdkDropList, CdkDropListGroup, CDK_DRAG_CONFIG, CDK_DROP_LIST, CDK_DROP_LIST_GROUP, DragDrop, DragDropConfig, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ScrollDispatcher } from '@angular/cdk/scrolling';
-import { SkipSelf } from '@angular/core';
+import { Input, SkipSelf } from '@angular/core';
 import { ChangeDetectorRef, Directive, ElementRef, Inject, Optional } from '@angular/core';
 import { Observable } from 'rxjs';
-import { INJ_CHILDREN, INJ_PAGE_ELEMENT, INJ_RENDER_MODE, INJ_DROP_LISTS_OBSERVABLE } from '../code-base/injection-tokens';
+import { INJ_PAGE_ELEMENT } from '../code-base/injection-tokens';
 import { PageElement } from '../code-base/page-element';
 import { ToolboxElement } from '../code-base/toolbox-element';
 import { TRenderMode } from '../code-base/types';
@@ -29,16 +29,16 @@ import { PageDesignService } from '../services/page-design.service';
 })
 export class DropZoneDirective extends CdkDropList<PageElement> {
 
+   @Input('drop-zone') slot: string = 'default';
+
    constructor(
       element: ElementRef<HTMLElement>,
       dragDrop: DragDrop,
       _changeDetectorRef: ChangeDetectorRef,
       _scrollDispatcher: ScrollDispatcher,
-      @Inject(INJ_PAGE_ELEMENT) public pageElement: PageElement,
-      @Inject(INJ_CHILDREN) public children: PageElement[],
-      @Inject(INJ_DROP_LISTS_OBSERVABLE) public allDropListsIds: Observable<string[]>,
-      @Inject(INJ_RENDER_MODE) public renderMode: TRenderMode,
       private pageDesignService: PageDesignService,
+      private parentRendererOutlet: RendererOutletComponent,
+      @Inject(INJ_PAGE_ELEMENT) private pageElement: PageElement,
       @Optional() _dir?: Directionality,
       @Optional() @Inject(CDK_DROP_LIST_GROUP) @SkipSelf() _group?: CdkDropListGroup<CdkDropList>,
       @Optional() @Inject(CDK_DRAG_CONFIG) config?: DragDropConfig,
@@ -59,19 +59,8 @@ export class DropZoneDirective extends CdkDropList<PageElement> {
 
       this.dropped.subscribe(event => this.onDragDrop(event));
 
-      this.allDropListsIds.subscribe(ids => {
-         const sortedIds = ids
-            .sort((a, b) => {
-               const aDashes = a.split('-').length;
-               const bDashes = b.split('-').length;
-
-               if (aDashes > bDashes) return -1;
-               if (aDashes < bDashes) return 1;
-
-               return 0;
-            });
-
-         const connectedIds = sortedIds
+      this.pageDesignService.dropListsChange.subscribe(ids => {
+         const connectedIds = ids
             .filter(x => x !== this.pageElement.uId);
 
          this.connectedTo = connectedIds;
@@ -89,7 +78,10 @@ export class DropZoneDirective extends CdkDropList<PageElement> {
          const parentElement = event.container.data as PageElement;
 
          if (this.canBeDropedFromToolbox(container, addingItem)) {
-            parentElement.children.push(new PageElement(parentElement, ieEvent.item.data));
+            const child = new PageElement(parentElement, ieEvent.item.data);
+            child.slot = this.slot;
+            parentElement.children.push(child);
+            this.parentRendererOutlet.logicalTreeChange.next({ parent: this.pageElement, child, slot: this.slot });
          }
 
       } else {
@@ -117,6 +109,7 @@ export class DropZoneDirective extends CdkDropList<PageElement> {
       return (element: CdkDrag<ToolboxElement>, container: CdkDropList<PageElement>) => {
          if (!container.data || !element.data) return false;
          const outlet = this.canBeDropedFromToolbox(container.data, element.data);
+         console.log('can enter', element.data.name, 'to', container.data.definition.name, '?', outlet);
          return outlet;
       };
    }

@@ -2,15 +2,13 @@
   body grip
   <section class="pd-body drop-host" drop-zone>
 
-    <renderer-outlet *ngFor="let child of children" [element]="child" [connectedDropListsIds]="allDropListsIds | async" [renderMode]="renderMode">
-    </renderer-outlet>
+    <renderer-children></renderer-children>
 
   </section>
 </ng-container>
 
 <section class="pd-body" *renderer-view="'run'">
   run
-  <renderer-outlet *ngFor="let child of children" [element]="child" [connectedDropListsIds]="allDropListsIds | async" [renderMode]="renderMode">
-  </renderer-outlet>
+  <renderer-children></renderer-children>
 
 </section>

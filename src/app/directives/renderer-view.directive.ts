@@ -17,7 +17,7 @@ export class RendererViewDirective implements OnInit {
    }
 
    ngOnInit() {
-      this.parentRendererOutlet.element.templateRefs ??= {};
-      this.parentRendererOutlet.element.templateRefs[this.rendererView] = this.templateRef;
+      this.parentRendererOutlet.pageElement.templateRefs ??= {};
+      this.parentRendererOutlet.pageElement.templateRefs[this.rendererView] = this.templateRef;
    }
 }
