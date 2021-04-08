@@ -1,3 +1,4 @@
+import { CDK_DROP_LIST } from '@angular/cdk/drag-drop';
 import { Component, ComponentFactoryResolver, Inject, Injector, Input, OnInit, Optional, ViewContainerRef } from '@angular/core';
 import { filter } from 'rxjs/operators';
 import { INJ_PAGE_ELEMENT } from 'src/app/code-base/injection-tokens';
@@ -20,7 +21,7 @@ export class RendererChildrenComponent implements OnInit {
       private cfr: ComponentFactoryResolver,
       private injector: Injector,
       private parentRendererOutlet: RendererOutletComponent,
-      @Optional() parentDropZone: DropZoneDirective,
+      @Optional() private parentDropZone: DropZoneDirective,
    ) {
       this.slot ??= parentDropZone?.slot;
    }
@@ -38,16 +39,26 @@ export class RendererChildrenComponent implements OnInit {
       this.pageElement.children.forEach((child, index) => {
          const childComponentFactory = this.cfr.resolveComponentFactory(RendererOutletComponent);
 
-         const componentRef = childComponentFactory.create(this.injector);
+         const componentRef = childComponentFactory.create(this.getChildrenInjector());
          // const componentRef = this.vcr.createComponent(childComponentFactory, index);
 
          // initialize
          componentRef.instance.pageElement = child;
+         // componentRef.
 
          // add to view
          this.vcr.insert(componentRef.hostView, index);
       })
+   }
 
+   private getChildrenInjector() {
+      return Injector.create({
+         name: 'Renderer Children Injector',
+         parent: this.injector,
+         providers: [
+            { provide: CDK_DROP_LIST, useValue: this.parentDropZone }
+         ]
+      })
    }
 
 }

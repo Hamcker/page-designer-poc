@@ -1,12 +1,10 @@
-<ng-container *renderer-view="'design'">
-  <!-- <renderer-drag-handler></renderer-drag-handler> -->
-  column grip
-  <section class="pd-col col drop-host" style="min-height: 50px;" drop-zone>
+<div class="col" *renderer-view="'design'">
+  <renderer-drag-handler></renderer-drag-handler>
 
+  <section class="drop-host" style="min-height: 50px;" drop-zone>
     <renderer-children></renderer-children>
-
   </section>
-</ng-container>
+</div>
 
 <section class="pd-col col" *renderer-view="'run'">
 

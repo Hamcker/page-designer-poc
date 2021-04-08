@@ -1,8 +1,10 @@
-<ng-container *renderer-view="'design'">
-  button grip
-  <button class="btn btn-primary">Hello World</button>
-</ng-container>
+<div *renderer-view="'design'">
+  <renderer-drag-handler></renderer-drag-handler>
+  <button class="btn btn-primary">
+    I'm a button
+  </button>
+</div>
 
-<ng-container *renderer-view="'run'">
-  <button class="btn btn-primary">Hello World</button>
-</ng-container>
+<button class="btn btn-primary" *renderer-view="'run'">
+
+</button>

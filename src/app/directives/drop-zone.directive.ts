@@ -114,11 +114,18 @@ export class DropZoneDirective extends CdkDropList<PageElement> {
       };
    }
 
-   private canBeDropedFromToolbox(container: PageElement, addingItem: ToolboxElement): boolean {
-      const parentAccepts = container.definition.childrenTypes !== false && container.definition.childrenTypes.includes(addingItem.name);
-      const childAccepts = addingItem.parentTypes !== false && addingItem.parentTypes.includes(container.definition.name);
+   private canBeDropedFromToolbox(container: PageElement, addingItem: ToolboxElement | PageElement): boolean {
+      if (addingItem instanceof ToolboxElement) {
+         const parentAccepts = container.definition.childrenTypes !== false && container.definition.childrenTypes.includes(addingItem.name);
+         const childAccepts = addingItem.parentTypes !== false && addingItem.parentTypes.includes(container.definition.name);
 
-      return parentAccepts && childAccepts;
+         return parentAccepts && childAccepts;
+      } else {
+         const parentAccepts = container.definition.childrenTypes !== false && container.definition.childrenTypes.includes(addingItem.definition.name);
+         const childAccepts = addingItem.definition.parentTypes !== false && addingItem.definition.parentTypes.includes(container.definition.name);
+
+         return parentAccepts && childAccepts;
+      }
    }
 
 
