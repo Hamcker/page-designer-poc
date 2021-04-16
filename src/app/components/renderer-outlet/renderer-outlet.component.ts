@@ -4,7 +4,7 @@ import { BaseRenderer } from 'src/app/code-base/base-renderer';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { INJ_PAGE_ELEMENT } from 'src/app/code-base/injection-tokens';
 import { PageDesignService } from 'src/app/services/page-design.service';
-import { PageElement } from 'src/app/code-base/page-element';
+import { ElementInstance } from 'src/app/code-base/element-instance';
 import { RendererRepository } from 'src/app/code-base/repositories/renderer-repository';
 import { TRenderMode } from 'src/app/code-base/types';
 import { filter } from 'rxjs/operators';
@@ -15,8 +15,8 @@ import { RendererChildrenComponent } from '../renderer-children/renderer-childre
 export type Content<T> = string | TemplateRef<T> | Type<T>;
 
 export interface ILogicalTreeChange {
-   parent: PageElement;
-   child: PageElement;
+   parent: ElementInstance;
+   child: ElementInstance;
    slot: string
 }
 
@@ -36,7 +36,7 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
     */
    logicalTreeChange = new EventEmitter<ILogicalTreeChange>(true);
 
-   @Input() pageElement: PageElement;
+   @Input() pageElement: ElementInstance;
 
    @ViewChild('dummyVcr', { read: ViewContainerRef }) dummyVcr: ViewContainerRef;
    @ViewChildren(RendererChildrenComponent) childrenRenderers: QueryList<RendererChildrenComponent>;
@@ -63,6 +63,7 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
    ngAfterViewInit() {
       // we do it here becuase dummyVcr exists now (can't be done in ngOnInit())
       this.pageDesignService.renderMode.subscribe(renderMode => this.redraw(renderMode));
+      this.logicalTreeChange.next();
    }
 
 
@@ -109,7 +110,7 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
       return Injector.create(options);
    }
 
-   private getIdsRecursive(item: PageElement): string[] {
+   private getIdsRecursive(item: ElementInstance): string[] {
       let ids = [item.uId];
       item.children.forEach(childItem => { ids = ids.concat(this.getIdsRecursive(childItem)) });
       return ids;

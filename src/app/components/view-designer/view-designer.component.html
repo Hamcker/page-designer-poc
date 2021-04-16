@@ -2,6 +2,7 @@
   <div class="d-flex border rounded h-100" cdkDropListGroup>
     <app-toolbox [allDropListsIds]="allDropListsIds"></app-toolbox>
     <app-elements-area class="flex-fill" (dropListChange)="allDropListsIds = $event" (layoutChange)="onLayoutJsonChange($event)"></app-elements-area>
+    <app-element-properties></app-element-properties>
   </div>
   <!-- {{allDropListsIds}} -->
 </div>

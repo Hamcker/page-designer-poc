@@ -1,7 +1,7 @@
-import { Component, Host, HostBinding, Inject, Input, OnInit } from '@angular/core';
+import { Component, Host, HostBinding, HostListener, Inject, Input, OnInit } from '@angular/core';
 
 import { INJ_PAGE_ELEMENT } from 'src/app/code-base/injection-tokens';
-import { PageElement } from 'src/app/code-base/page-element';
+import { ElementInstance } from 'src/app/code-base/element-instance';
 import { RendererOutletComponent } from '../renderer-outlet/renderer-outlet.component';
 import { TRenderMode } from 'src/app/code-base/types';
 import { PageDesignService } from 'src/app/services/page-design.service';
@@ -17,11 +17,10 @@ export class RendererDragHandlerComponent implements OnInit {
    @Input('position') position: 'inside' | 'outside';
 
    @HostBinding('class.hidden') hidden: boolean = false;
-   @HostBinding('class.inside') get isPositionInside(): boolean { return this.position === 'inside'; }
-   @HostBinding('class.outside') get isPositionOutside(): boolean { return this.position === 'outside'; }
+   @HostBinding('class.selected') selected: boolean;
 
    constructor(
-      @Inject(INJ_PAGE_ELEMENT) public pageElement: PageElement,
+      @Inject(INJ_PAGE_ELEMENT) public pageElement: ElementInstance,
       private pageDesignService: PageDesignService,
    ) {
       this.pageDesignService.renderMode.subscribe(x => this.hidden = x === 'run');
@@ -29,8 +28,15 @@ export class RendererDragHandlerComponent implements OnInit {
    }
 
    ngOnInit(): void {
+      this.pageDesignService.getSelectedItem().subscribe(x => {
+         this.selected = this.pageElement.uId === x.uId;
+      });
    }
 
+   @HostListener('click')
+   onHostClick() {
+      this.pageDesignService.itemSelect.next(this.pageElement);
+   }
 
    onRemoveClick() {
       const index = this.pageElement.children.findIndex(x => x.uId === this.pageElement.uId);

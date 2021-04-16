@@ -1,4 +1,5 @@
-<div cdkDrag [id]="pageElement.uId" [cdkDragData]="pageElement" [cdkDragDisabled]="dragDisabled">
+<div class="drag-handler" cdkDrag [id]="pageElement.uId" [cdkDragData]="pageElement" [cdkDragDisabled]="dragDisabled" [class.selected]="selected"
+  (click)="onHostClick()">
   <div class="item-drag-handle d-flex align-items-center" cdkDragHandle>
     <i *ngIf="!dragDisabled" class="las la-braille mr-2"> </i>
     {{ pageElement.definition.name }}

@@ -1,9 +1,9 @@
 import { TemplateRef, Type, ViewContainerRef } from "@angular/core";
 
-import { ToolboxElement } from "../toolbox-element";
+import { ElementDefinition } from "../element-definition";
 
 export interface IRenderer {
-   toolboxElement: ToolboxElement;
+   toolboxElement: ElementDefinition;
    componentType: Type<any>;
    templateRef?: TemplateRef<any>;
 }
@@ -23,7 +23,7 @@ export class RendererRepository {
       return this.repository[name];
    }
 
-   static registerViewContainerRef(toolboxElement: ToolboxElement, templateRef: TemplateRef<any>) {
+   static registerViewContainerRef(toolboxElement: ElementDefinition, templateRef: TemplateRef<any>) {
       const renderer = this.get(toolboxElement.name);
       if (!renderer) return;
 

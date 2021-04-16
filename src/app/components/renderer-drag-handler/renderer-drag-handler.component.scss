@@ -3,3 +3,13 @@
       display: none;
    }
 }
+
+.drag-handler {
+   &:hover {
+      text-decoration: underline;
+   }
+
+   &.selected {
+      font-weight: bold;
+   }
+}

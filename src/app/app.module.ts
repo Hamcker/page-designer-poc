@@ -20,6 +20,9 @@ import { RendererViewDirective } from './directives/renderer-view.directive';
 import { ToolboxComponent } from './components/toolbox/toolbox.component';
 import { ViewDesignerComponent } from './components/view-designer/view-designer.component';
 import { ViewViewerComponent } from './components/view-viewer/view-viewer.component';
+import { ElementPropertiesComponent } from './components/element-properties/element-properties.component';
+import { RendererInputComponent } from './components/renderers/renderer-input/renderer-input.component';
+import { PropertyPipe } from './pipes/property.pipe';
 
 const monacoConfig: NgxMonacoEditorConfig = {
    defaultOptions: { theme: 'vs-dark', innerWidth: '100px' }, // pass default options to be used
@@ -42,7 +45,10 @@ const monacoConfig: NgxMonacoEditorConfig = {
       RendererChildrenComponent,
       RendererDragHandlerComponent,
       RendererViewDirective,
-      DropZoneDirective
+      DropZoneDirective,
+      ElementPropertiesComponent,
+      RendererInputComponent,
+      PropertyPipe
    ],
    imports: [
       BrowserModule,

@@ -1,7 +1,7 @@
-import { ToolboxElement } from "../toolbox-element";
+import { ElementDefinition } from "../element-definition";
 
-export const EL_BUTTON: ToolboxElement = new ToolboxElement({
+export const EL_BUTTON: ElementDefinition = new ElementDefinition({
    name: 'Button',
    icon: 'las la-square',
-   parentType: ['Col'],
+   parentTypes: ['Col'],
 });

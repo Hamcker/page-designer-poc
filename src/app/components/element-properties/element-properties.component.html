@@ -1,0 +1,40 @@
+<div class="m-2 p-3 border rounded" *ngIf="selectedElement" style="min-width: 300px;">
+  <div *ngFor="let propertyDef of selectedElement.definition.properties; let first = first; let last = last"
+    [ngClass]="{'border-bottom pb-2': !last, 'mt-2': !first}">
+    <h5>{{propertyDef.name}}</h5>
+    <div class="d-flex flex-column gap-2">
+
+      <div class="form-check text-nowrap">
+        <input class="form-check-input" [id]="propertyDef.name + '_static'" type="radio" [attr.name]="propertyDef.name + '_valueType'"
+          [checked]="getValueType(propertyDef) === 'static'" (change)="setValueType(propertyDef, 'static')">
+
+        <label class="form-check-label" [for]="propertyDef.name + '_static'">
+          Static Value
+        </label>
+      </div>
+
+      <div class="form-check text-nowrap" *ngIf="propertyDef.canBound">
+        <input class="form-check-input" type="radio" [id]="propertyDef.name + '_dynamic'" [attr.name]="propertyDef.name + '_valueType'"
+          [checked]="getValueType(propertyDef) === 'dynamic'" (change)="setValueType(propertyDef, 'dynamic')">
+
+        <label class="form-check-label" [for]="propertyDef.name + '_dynamic'">
+          Dynamic
+        </label>
+      </div>
+
+      <input *ngIf="getValueType(propertyDef) === 'static'" class="form-control" [ngModel]="getStaticVaue(propertyDef)"
+        (ngModelChange)="setStaticValue(propertyDef, $event)" placeholder="static value">
+
+      <div class="d-flex flex-column" *ngIf="getValueType(propertyDef) === 'dynamic' && propertyDef.canBound">
+        <select class="form-select" [ngModel]="getBindindSource(propertyDef)" (ngModelChange)="setBindindSource(propertyDef, $event)">
+          <option selcted disabled>Choose Source</option>
+          <option value="dataContext">Data Context</option>
+          <option value="viewContext">View Context</option>
+          <option value="dataSource">Data Source</option>
+        </select>
+        <input class="form-control mt-2" [ngModel]="getDynamicValuePath(propertyDef)" (ngModelChange)="setDynamicValuePath(propertyDef, $event)"
+          placeholder="Binding path">
+      </div>
+    </div>
+  </div>
+</div>

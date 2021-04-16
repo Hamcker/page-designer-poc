@@ -5,8 +5,8 @@ import { Input, SkipSelf } from '@angular/core';
 import { ChangeDetectorRef, Directive, ElementRef, Inject, Optional } from '@angular/core';
 import { Observable } from 'rxjs';
 import { INJ_PAGE_ELEMENT } from '../code-base/injection-tokens';
-import { PageElement } from '../code-base/page-element';
-import { ToolboxElement } from '../code-base/toolbox-element';
+import { ElementInstance } from '../code-base/element-instance';
+import { ElementDefinition } from '../code-base/element-definition';
 import { TRenderMode } from '../code-base/types';
 import { RendererOutletComponent } from '../components/renderer-outlet/renderer-outlet.component';
 import { PageDesignService } from '../services/page-design.service';
@@ -27,7 +27,7 @@ import { PageDesignService } from '../services/page-design.service';
       '[class.cdk-drop-list-receiving]': '_dropListRef.isReceiving()',
    }
 })
-export class DropZoneDirective extends CdkDropList<PageElement> {
+export class DropZoneDirective extends CdkDropList<ElementInstance> {
 
    @Input('drop-zone') slot: string = 'default';
 
@@ -38,7 +38,7 @@ export class DropZoneDirective extends CdkDropList<PageElement> {
       _scrollDispatcher: ScrollDispatcher,
       private pageDesignService: PageDesignService,
       private parentRendererOutlet: RendererOutletComponent,
-      @Inject(INJ_PAGE_ELEMENT) private pageElement: PageElement,
+      @Inject(INJ_PAGE_ELEMENT) private pageElement: ElementInstance,
       @Optional() _dir?: Directionality,
       @Optional() @Inject(CDK_DROP_LIST_GROUP) @SkipSelf() _group?: CdkDropListGroup<CdkDropList>,
       @Optional() @Inject(CDK_DRAG_CONFIG) config?: DragDropConfig,
@@ -68,17 +68,17 @@ export class DropZoneDirective extends CdkDropList<PageElement> {
    }
 
 
-   private onDragDrop(event: CdkDragDrop<PageElement | ToolboxElement>) {
+   private onDragDrop(event: CdkDragDrop<ElementInstance | ElementDefinition>) {
       if (!event.item.data || !event.container.data) return;
 
       if (event.previousContainer.id === 'toolbox') {
-         const ieEvent = event as CdkDragDrop<ToolboxElement>;
-         const addingItem = event.item.data as ToolboxElement;
-         const container = event.container.data as PageElement;
-         const parentElement = event.container.data as PageElement;
+         const ieEvent = event as CdkDragDrop<ElementDefinition>;
+         const addingItem = event.item.data as ElementDefinition;
+         const container = event.container.data as ElementInstance;
+         const parentElement = event.container.data as ElementInstance;
 
          if (this.canBeDropedFromToolbox(container, addingItem)) {
-            const child = new PageElement(parentElement, ieEvent.item.data);
+            const child = new ElementInstance(parentElement, ieEvent.item.data);
             child.slot = this.slot;
             parentElement.children.push(child);
             this.parentRendererOutlet.logicalTreeChange.next({ parent: this.pageElement, child, slot: this.slot });
@@ -86,10 +86,10 @@ export class DropZoneDirective extends CdkDropList<PageElement> {
 
       } else {
          event.container.element.nativeElement.classList.remove('active');
-         const reEvent = event as CdkDragDrop<PageElement>;
+         const reEvent = event as CdkDragDrop<ElementInstance>;
 
          if (this.canBeDropped(reEvent)) {
-            const movingItem: PageElement = reEvent.item.data;
+            const movingItem: ElementInstance = reEvent.item.data;
             reEvent.container.data.children.push(movingItem);
             reEvent.previousContainer.data.children =
                reEvent.previousContainer.data.children.filter((child) => child.uId !== movingItem.uId);
@@ -106,7 +106,7 @@ export class DropZoneDirective extends CdkDropList<PageElement> {
    }
 
    canEnter() {
-      return (element: CdkDrag<ToolboxElement>, container: CdkDropList<PageElement>) => {
+      return (element: CdkDrag<ElementDefinition>, container: CdkDropList<ElementInstance>) => {
          if (!container.data || !element.data) return false;
          const outlet = this.canBeDropedFromToolbox(container.data, element.data);
          console.log('can enter', element.data.name, 'to', container.data.definition.name, '?', outlet);
@@ -114,8 +114,8 @@ export class DropZoneDirective extends CdkDropList<PageElement> {
       };
    }
 
-   private canBeDropedFromToolbox(container: PageElement, addingItem: ToolboxElement | PageElement): boolean {
-      if (addingItem instanceof ToolboxElement) {
+   private canBeDropedFromToolbox(container: ElementInstance, addingItem: ElementDefinition | ElementInstance): boolean {
+      if (addingItem instanceof ElementDefinition) {
          const parentAccepts = container.definition.childrenTypes !== false && container.definition.childrenTypes.includes(addingItem.name);
          const childAccepts = addingItem.parentTypes !== false && addingItem.parentTypes.includes(container.definition.name);
 
@@ -129,8 +129,8 @@ export class DropZoneDirective extends CdkDropList<PageElement> {
    }
 
 
-   private canBeDropped(event: CdkDragDrop<PageElement, PageElement>): boolean {
-      const movingItem: PageElement = event.item.data;
+   private canBeDropped(event: CdkDragDrop<ElementInstance, ElementInstance>): boolean {
+      const movingItem: ElementInstance = event.item.data;
 
       return event.previousContainer.id !== event.container.id
          && this.isNotSelfDrop(event)
@@ -138,11 +138,11 @@ export class DropZoneDirective extends CdkDropList<PageElement> {
          && this.canBeDropedFromToolbox(event.container.data, movingItem.definition);
    }
 
-   private isNotSelfDrop(event: CdkDragDrop<PageElement> | CdkDragEnter<PageElement> | CdkDragExit<PageElement>): boolean {
+   private isNotSelfDrop(event: CdkDragDrop<ElementInstance> | CdkDragEnter<ElementInstance> | CdkDragExit<ElementInstance>): boolean {
       return event.container.data.uId !== event.item.data.uId;
    }
 
-   private hasChild(parentItem: PageElement, childItem: PageElement): boolean {
+   private hasChild(parentItem: ElementInstance, childItem: ElementInstance): boolean {
       const hasChild = parentItem.children.some((item) => item.uId === childItem.uId);
       return hasChild ? true : parentItem.children.some((item) => this.hasChild(item, childItem));
    }

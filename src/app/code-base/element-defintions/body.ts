@@ -1,6 +1,6 @@
-import { ToolboxElement } from "../toolbox-element";
+import { ElementDefinition } from "../element-definition";
 
-export const EL_BODY: ToolboxElement = new ToolboxElement({
+export const EL_BODY: ElementDefinition = new ElementDefinition({
    name: 'Body',
    icon: '',
    childrenTypes: ['Row'],

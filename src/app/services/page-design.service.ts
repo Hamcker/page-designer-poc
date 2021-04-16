@@ -1,8 +1,9 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
+import { ElementInstance } from '../code-base/element-instance';
 import { Injectable } from '@angular/core';
-import { PageElement } from '../code-base/page-element';
 import { TRenderMode } from '../code-base/types';
+import { filter } from 'rxjs/operators';
 
 @Injectable({
    providedIn: 'root'
@@ -11,17 +12,26 @@ export class PageDesignService {
 
    layoutChange = new Subject();
    dropListsChange = new BehaviorSubject<string[]>([]);
+
    renderMode = new BehaviorSubject<TRenderMode>('design');
+   itemSelect = new BehaviorSubject<ElementInstance>(null);
+   dataContext = new BehaviorSubject<object>(null);
+   viewContext = new Subject();
 
    constructor() { }
 
-   collectAllDropListsIds(rootElement: PageElement): string[] {
+   collectAllDropListsIds(rootElement: ElementInstance): string[] {
       const dropListsIds = this.getIdsRecursive(rootElement);
       this.dropListsChange.next(dropListsIds);
       return dropListsIds;
    }
 
-   private getIdsRecursive(item: PageElement): string[] {
+   getSelectedItem() {
+      return this.itemSelect.pipe(filter(x => !!x));
+   }
+
+
+   private getIdsRecursive(item: ElementInstance): string[] {
       let ids = [item.uId];
       item.children.forEach(childItem => { ids = ids.concat(this.getIdsRecursive(childItem)) });
 

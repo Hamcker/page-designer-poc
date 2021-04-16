@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 
+import { PageDesignService } from 'src/app/services/page-design.service';
 import { take } from 'rxjs/operators';
 import { timer } from 'rxjs';
 
@@ -11,6 +12,7 @@ import { timer } from 'rxjs';
 export class PageAllInOneComponent implements OnInit, AfterViewInit {
 
    layoutJson: string;
+   dataContext: string;
 
    showEditors = false;
 
@@ -23,16 +25,24 @@ export class PageAllInOneComponent implements OnInit, AfterViewInit {
          ref: null,
       },
       dataContext: {
-         options: {},
+         options: {
+            language: 'json',
+            tabSize: 2,
+         },
          ref: null,
       },
       viewContext: {
-         options: {},
+         options: {
+            language: 'json',
+            tabSize: 2,
+         },
          ref: null,
       },
    }
 
-   constructor() { }
+   constructor(
+      private pageDesignerService: PageDesignService,
+   ) { }
 
    ngOnInit(): void {
       timer(500).pipe(take(1)).subscribe(_ => {
@@ -53,6 +63,10 @@ export class PageAllInOneComponent implements OnInit, AfterViewInit {
    onLayoutJsonChange(json: string) {
       this.layoutJson = json;
       timer(50).pipe(take(1)).subscribe(_ => this.editors.generatedLayout.ref.getAction('editor.action.formatDocument').run());
+   }
 
+   onDataContextChange(json: string) {
+      const dataContext = JSON.parse(json);
+      this.pageDesignerService.dataContext.next(dataContext);
    }
 }

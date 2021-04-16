@@ -3,8 +3,9 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import { EL_BUTTON } from 'src/app/code-base/element-defintions/button';
 import { EL_COL } from 'src/app/code-base/element-defintions/col';
+import { EL_INPUT } from 'src/app/code-base/element-defintions/input';
 import { EL_ROW } from 'src/app/code-base/element-defintions/row';
-import { ToolboxElement } from 'src/app/code-base/toolbox-element';
+import { ElementDefinition } from 'src/app/code-base/element-definition';
 
 @Component({
    selector: 'app-toolbox',
@@ -13,10 +14,11 @@ import { ToolboxElement } from 'src/app/code-base/toolbox-element';
 })
 export class ToolboxComponent implements OnInit {
 
-   elements: ToolboxElement[] = [
+   elements: ElementDefinition[] = [
       EL_ROW,
       EL_COL,
       EL_BUTTON,
+      EL_INPUT,
    ];
 
    @Input() allDropListsIds: string[];

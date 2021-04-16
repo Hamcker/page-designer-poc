@@ -1,11 +1,16 @@
-<div class="col" *renderer-view="'design'">
+<div class="col{{(get('width') | async) ? '-' + (get('width') | async) : '' }}" *renderer-view="'design'">
   <renderer-drag-handler></renderer-drag-handler>
 
   <section class="drop-host" style="min-height: 50px;" drop-zone>
     <renderer-children></renderer-children>
   </section>
+
+  <!-- <div class="border border-primary">
+    {{'width' | prop}}
+  </div> -->
 </div>
 
+<!-- -------------------------------------------------------------------------------------->
 <section class="pd-col col" *renderer-view="'run'">
 
   <renderer-children></renderer-children>

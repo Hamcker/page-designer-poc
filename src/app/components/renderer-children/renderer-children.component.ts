@@ -2,7 +2,7 @@ import { CDK_DROP_LIST } from '@angular/cdk/drag-drop';
 import { Component, ComponentFactoryResolver, Inject, Injector, Input, OnInit, Optional, ViewContainerRef } from '@angular/core';
 import { filter } from 'rxjs/operators';
 import { INJ_PAGE_ELEMENT } from 'src/app/code-base/injection-tokens';
-import { PageElement } from 'src/app/code-base/page-element';
+import { ElementInstance } from 'src/app/code-base/element-instance';
 import { DropZoneDirective } from 'src/app/directives/drop-zone.directive';
 import { RendererOutletComponent } from '../renderer-outlet/renderer-outlet.component';
 
@@ -16,7 +16,7 @@ export class RendererChildrenComponent implements OnInit {
    @Input() slot: string = 'default';
 
    constructor(
-      @Inject(INJ_PAGE_ELEMENT) private pageElement: PageElement,
+      @Inject(INJ_PAGE_ELEMENT) private pageElement: ElementInstance,
       private vcr: ViewContainerRef,
       private cfr: ComponentFactoryResolver,
       private injector: Injector,
@@ -31,7 +31,9 @@ export class RendererChildrenComponent implements OnInit {
          // .pipe(filter(x => x.slot === this.slot))
          .subscribe(_ => {
             this.renderChildren();
-         })
+         });
+
+      this.renderChildren();
    }
 
    renderChildren() {
