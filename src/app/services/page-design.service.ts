@@ -15,10 +15,15 @@ export class PageDesignService {
 
    renderMode = new BehaviorSubject<TRenderMode>('design');
    itemSelect = new BehaviorSubject<ElementInstance>(null);
-   dataContext = new BehaviorSubject<object>(null);
+   dataContext = new BehaviorSubject<any>(null);
+   dataContextChange = new Subject();
    viewContext = new Subject();
 
-   constructor() { }
+   constructor() {
+      this.dataContextChange.subscribe(x => {
+         this.dataContext.next(this.dataContext.value);
+      })
+   }
 
    collectAllDropListsIds(rootElement: ElementInstance): string[] {
       const dropListsIds = this.getIdsRecursive(rootElement);

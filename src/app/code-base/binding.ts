@@ -3,7 +3,7 @@ import { PropertyDesign } from "./property-design";
 import { TPropertyValue } from "./types";
 
 export type TBindingSource = 'dataSource' | 'dataContext' | 'viewContext';
-export type TBindingDirection = 'oneWay' | 'twoWay';
+export type TBindingDirection = 'oneWayToSource' | 'oneWay' | 'once' | 'twoWay' | 'default';
 
 export class Binding {
    $thisIsBinding?= true;
@@ -20,23 +20,28 @@ export class Binding {
 
 // examples
 const examples: Binding[] = [
+
+   // binding to dataContext without any path
+   // binding to whole DataContext object.
+   new Binding({
+      source: 'dataContext',
+      path: ''
+   }),
+
+   // binding to dataContext with a relative path
+   // binds to `person` property of parent element's DataContext.
+   new Binding({
+      source: 'dataContext',
+      path: 'person'
+   }),
+
    // binding to dataContext with an absolute path
+   // can be used anywhere in visual tree to bind through root DataContext
    new Binding({
       source: 'dataContext',
-      path: 'person.firstName'
+      path: '^.employee.person'
    }),
 
-   // binding to dataContext with a relative path (used in itterable and objects)
-   new Binding({
-      source: 'dataContext',
-      path: '.firstName'
-   }),
-
-   // binding to dataContext without any path (used in itterables when items are premitives)
-   new Binding({
-      source: 'dataContext',
-      path: '.'
-   }),
 
 
 

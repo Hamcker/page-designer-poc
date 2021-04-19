@@ -6,6 +6,7 @@ import { EL_COL } from 'src/app/code-base/element-defintions/col';
 import { EL_INPUT } from 'src/app/code-base/element-defintions/input';
 import { EL_ROW } from 'src/app/code-base/element-defintions/row';
 import { ElementDefinition } from 'src/app/code-base/element-definition';
+import { EL_Repeater } from 'src/app/code-base/element-defintions/repeater';
 
 @Component({
    selector: 'app-toolbox',
@@ -19,6 +20,7 @@ export class ToolboxComponent implements OnInit {
       EL_COL,
       EL_BUTTON,
       EL_INPUT,
+      EL_Repeater,
    ];
 
    @Input() allDropListsIds: string[];

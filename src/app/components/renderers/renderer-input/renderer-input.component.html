@@ -1,5 +1,5 @@
 <div *renderer-view="'design'">
   <renderer-drag-handler></renderer-drag-handler>
 
-  <input type="text" [ngModel]="get('value') | async" (ngModelChange)="set('value', $event)">
+  <input type="text" [ngModel]="get('value') | async" (ngModelChange)="set('value', $event)" [placeholder]="get('placeholder')">
 </div>

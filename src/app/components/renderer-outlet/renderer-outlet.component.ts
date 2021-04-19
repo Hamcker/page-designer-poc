@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, 
 
 import { BaseRenderer } from 'src/app/code-base/base-renderer';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { INJ_PAGE_ELEMENT } from 'src/app/code-base/injection-tokens';
+import { INJ_DATA_CONTEXT, INJ_PAGE_ELEMENT } from 'src/app/code-base/injection-tokens';
 import { PageDesignService } from 'src/app/services/page-design.service';
 import { ElementInstance } from 'src/app/code-base/element-instance';
 import { RendererRepository } from 'src/app/code-base/repositories/renderer-repository';
@@ -11,6 +11,8 @@ import { filter } from 'rxjs/operators';
 import { ElementsAreaComponent } from '../elements-area/elements-area.component';
 import { DropZoneDirective } from 'src/app/directives/drop-zone.directive';
 import { RendererChildrenComponent } from '../renderer-children/renderer-children.component';
+import { PROP_DATACONTEXT } from 'src/app/code-base/element-defintions/frequent-properties';
+import { deepFindValue } from 'src/app/code-base/deep-find';
 
 export type Content<T> = string | TemplateRef<T> | Type<T>;
 
@@ -36,6 +38,8 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
     */
    logicalTreeChange = new EventEmitter<ILogicalTreeChange>(true);
 
+   #dataContext: any;
+
    @Input() pageElement: ElementInstance;
 
    @ViewChild('dummyVcr', { read: ViewContainerRef }) dummyVcr: ViewContainerRef;
@@ -59,6 +63,8 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
          .subscribe(_ => {
             this.pageDesignService.collectAllDropListsIds(this.pageElement);
          });
+
+      this.pageDesignService.dataContext.subscribe(dc => this.#dataContext = dc);
    }
    ngAfterViewInit() {
       // we do it here becuase dummyVcr exists now (can't be done in ngOnInit())
@@ -95,7 +101,6 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
 
 
    private getInjector(): Injector {
-
       const options: {
          providers: StaticProvider[];
          parent?: Injector;
@@ -104,6 +109,7 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
          parent: this.injector,
          providers: [
             { provide: INJ_PAGE_ELEMENT, useValue: this.pageElement },
+            { provide: ElementInstance, useValue: this.pageElement },
          ]
       }
 
@@ -115,7 +121,6 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
       item.children.forEach(childItem => { ids = ids.concat(this.getIdsRecursive(childItem)) });
       return ids;
    }
-
 
 }
 

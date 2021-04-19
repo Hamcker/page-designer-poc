@@ -107,9 +107,13 @@ export class DropZoneDirective extends CdkDropList<ElementInstance> {
 
    canEnter() {
       return (element: CdkDrag<ElementDefinition>, container: CdkDropList<ElementInstance>) => {
-         if (!container.data || !element.data) return false;
-         const outlet = this.canBeDropedFromToolbox(container.data, element.data);
-         console.log('can enter', element.data.name, 'to', container.data.definition.name, '?', outlet);
+         const NonNullDrag = !!container.data && !!element.data;
+         const childrenMaxExceed = (container.data.definition.maxChildren ?? Infinity) > container.data.children.length;
+         const toolboxDrag = this.canBeDropedFromToolbox(container.data, element.data);
+
+         const outlet = NonNullDrag && childrenMaxExceed && toolboxDrag;
+         console.log('can enter', element.data.name, 'to', container.data.definition.name, '?', outlet, `because null=${NonNullDrag} && maxchildren=${childrenMaxExceed} && toolbox=${toolboxDrag}`);
+
          return outlet;
       };
    }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
    selector: 'app-view-designer',
@@ -11,6 +11,7 @@ export class ViewDesignerComponent implements OnInit {
    layoutJson: string;
 
    @Output() layoutJsonChange = new EventEmitter<string>();
+   @Output() dataContextChange = new EventEmitter<{}>();
 
    constructor() { }
 

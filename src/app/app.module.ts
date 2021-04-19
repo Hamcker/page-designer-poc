@@ -23,6 +23,7 @@ import { ViewViewerComponent } from './components/view-viewer/view-viewer.compon
 import { ElementPropertiesComponent } from './components/element-properties/element-properties.component';
 import { RendererInputComponent } from './components/renderers/renderer-input/renderer-input.component';
 import { PropertyPipe } from './pipes/property.pipe';
+import { RendererRepeaterComponent } from './components/renderers/renderer-repeater/renderer-repeater.component';
 
 const monacoConfig: NgxMonacoEditorConfig = {
    defaultOptions: { theme: 'vs-dark', innerWidth: '100px' }, // pass default options to be used
@@ -48,7 +49,8 @@ const monacoConfig: NgxMonacoEditorConfig = {
       DropZoneDirective,
       ElementPropertiesComponent,
       RendererInputComponent,
-      PropertyPipe
+      PropertyPipe,
+      RendererRepeaterComponent
    ],
    imports: [
       BrowserModule,

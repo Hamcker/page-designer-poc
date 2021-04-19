@@ -11,6 +11,6 @@ export const PROP_DATACONTEXT = new PropertyPrptotype({
    name: 'dataContext',
    editor: 'textbox',
    type: 'string',
-   defaultValue: '.',
+   defaultValue: '',
    canBound: false,
 });

@@ -12,7 +12,16 @@ import { timer } from 'rxjs';
 export class PageAllInOneComponent implements OnInit, AfterViewInit {
 
    layoutJson: string;
-   dataContext: string;
+
+   #dataContext: any;
+   get dataContext(): string {
+      return JSON.stringify(this.#dataContext);
+   }
+   set dataContext(value: string) {
+      const dc = JSON.parse(value);
+      this.#dataContext = value;
+      this.pageDesignerService.dataContext.next(dc);
+   }
 
    showEditors = false;
 
@@ -47,8 +56,13 @@ export class PageAllInOneComponent implements OnInit, AfterViewInit {
    ngOnInit(): void {
       timer(500).pipe(take(1)).subscribe(_ => {
          this.showEditors = true
-         // Object.keys(this.editors).map(x => this.editors[x]).forEach(x => x.ref.layout());
       });
+
+      this.pageDesignerService.dataContext.subscribe(dc => {
+         this.#dataContext = dc;
+      });
+
+      timer(50, 2000).pipe().subscribe(_ => this.editors.dataContext.ref?.getAction('editor.action.formatDocument').run());
    }
 
    ngAfterViewInit() {
