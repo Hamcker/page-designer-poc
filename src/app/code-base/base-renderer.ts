@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, Injector, OnInit, Output } from "@angular/core";
-import { BehaviorSubject, Observable, asapScheduler, of, scheduled } from "rxjs";
+import { BehaviorSubject, Observable, asapScheduler, of, scheduled, Subject } from "rxjs";
 import { debounceTime, map, mergeAll, mergeMap, tap } from "rxjs/operators";
 
 import { Binding } from "./binding";
@@ -11,6 +11,7 @@ import { PropertyDesign } from "./property-design";
 import { TPropertyValue } from "./types";
 import { deepFindValue } from "./deep-find";
 import { PROP_DATACONTEXT } from "./element-defintions/frequent-properties";
+import { Guid } from "guid-typescript";
 
 export type TDataContextType = 'primitive' | 'object' | 'array';
 
@@ -20,20 +21,31 @@ export type TDataContextType = 'primitive' | 'object' | 'array';
 })
 export abstract class BaseRenderer implements OnInit, AfterViewInit {
 
+   uid = Guid.create().toString();
+
    observableCache: { [i: string]: BehaviorSubject<any> } = {};
 
-   itemDrop = new EventEmitter<CdkDragDrop<ElementInstance>>();
    layoutChange = new EventEmitter();
    lifecycleEvents = new EventEmitter<string>(true);
 
    elementInstance: ElementInstance;
    dataContextType: TDataContextType;
    dataContext: any;
+   #itemContext: any;
+   get itemContext(): any {
+      return this.#itemContext;
+   }
+   set itemContext(value: any) {
+      this.#itemContext = value;
+      if (value) console.log(this.uid, ' <-- ', value, ' ---- ', this.elementInstance.uId);
+   }
+
+   logicalTreeChange = new Subject();
 
    #pageDesignerService: PageDesignService;
 
    constructor(protected _injector: Injector) {
-      this.elementInstance = _injector.get(INJ_PAGE_ELEMENT);
+      this.elementInstance ??= _injector.get(INJ_PAGE_ELEMENT);
       this.#pageDesignerService = _injector.get(PageDesignService);
       this.getDataContext();
    }
@@ -46,9 +58,6 @@ export abstract class BaseRenderer implements OnInit, AfterViewInit {
       this.lifecycleEvents.emit('AfterViewInit');
    }
 
-   onDragDrop(event: CdkDragDrop<ElementInstance>) {
-      this.itemDrop.emit(event);
-   }
    onLayoutChange() {
       this.layoutChange.emit();
    }
@@ -90,11 +99,12 @@ export abstract class BaseRenderer implements OnInit, AfterViewInit {
       switch (binding.source) {
          case 'dataContext':
             return this.getValueFromDataContext(binding.path);
-            break;
 
          case 'viewContext':
             return this.getValueFromViewContext(binding.path);
-            break;
+
+         case 'itemContext':
+            return this.getValueFromItemContext(binding.path);
       }
    }
 
@@ -106,6 +116,10 @@ export abstract class BaseRenderer implements OnInit, AfterViewInit {
 
          case 'viewContext':
             this.setValueToViewContext(binding.path, value);
+            break;
+
+         case 'itemContext':
+            this.setValueToItemContext(binding.path, value);
             break;
       }
    }
@@ -148,6 +162,27 @@ export abstract class BaseRenderer implements OnInit, AfterViewInit {
       }
 
       dataContext[key] = value;
+
+      // fire changes on dataContext (new state)
+      this.#pageDesignerService.dataContextChange.next();
+   }
+
+   private getValueFromItemContext(path: string): Observable<Exclude<TPropertyValue, Binding>> {
+      console.log(this.uid, ' ==> ', this.itemContext, ' ==== ', this.elementInstance.uId);
+      return of(deepFindValue(this.itemContext, path));
+   }
+   private setValueToItemContext(path: string, value: any): void {
+      console.log(this.uid, ' <== ', this.itemContext, ' ==== ', this.elementInstance.uId);
+      const objectPathArr = path.split('.');
+      const key = objectPathArr[objectPathArr.length - 1];
+      let itemContext = this.itemContext;
+
+      if (objectPathArr.length !== 1) {
+         const objectPath = objectPathArr.slice(0, objectPathArr.length - 2); // skip last (leaf)
+         itemContext = deepFindValue(this.itemContext, objectPath.join('.'))
+      }
+
+      itemContext[key] = value;
 
       // fire changes on dataContext (new state)
       this.#pageDesignerService.dataContextChange.next();

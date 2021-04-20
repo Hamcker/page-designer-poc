@@ -2,7 +2,7 @@ import { DatasourceParameter } from "./datasource-parameter";
 import { PropertyDesign } from "./property-design";
 import { TPropertyValue } from "./types";
 
-export type TBindingSource = 'dataSource' | 'dataContext' | 'viewContext';
+export type TBindingSource = 'dataSource' | 'dataContext' | 'viewContext' | 'itemContext';
 export type TBindingDirection = 'oneWayToSource' | 'oneWay' | 'once' | 'twoWay' | 'default';
 
 export class Binding {

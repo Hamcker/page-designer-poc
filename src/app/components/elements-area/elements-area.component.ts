@@ -104,18 +104,18 @@ export class ElementsAreaComponent implements OnInit {
       repeater1.property('items').bind('dataContext', 'phones');
 
       const input7 = new ElementInstance(repeater1, EL_INPUT);
-      input7.property('value').bind('dataContext', 'value'); // phones[x].value
+      input7.property('value').bind('itemContext', 'value'); // phones[x].value
       repeater1.children.push(input7);
+      root.children.push(repeater1);
 
       const repeater2 = new ElementInstance(root, EL_Repeater);
       repeater2.property('items').bind('dataContext', 'tags');
 
       const input8 = new ElementInstance(repeater2, EL_INPUT);
-      input8.property('value').bind('dataContext', ''); // phones[x].value
+      input8.property('value').bind('itemContext', ''); // phones[x].value
       repeater2.children.push(input8);
 
-
-      root.children.push(repeater1, repeater2);
+      root.children.push(repeater2);
 
       // ------------------------------------------------------------------------------------------
 
@@ -136,7 +136,8 @@ export class ElementsAreaComponent implements OnInit {
             city: 'marand'
          },
          phones: [
-            { type: 'mobile', value: '+989359861969' }
+            { type: 'mobile', value: '+989359861969' },
+            { type: 'home', value: '+905538337789' },
          ],
          tags: [
             'developer',

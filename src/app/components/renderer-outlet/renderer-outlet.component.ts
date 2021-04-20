@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, 
 
 import { BaseRenderer } from 'src/app/code-base/base-renderer';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { INJ_DATA_CONTEXT, INJ_PAGE_ELEMENT } from 'src/app/code-base/injection-tokens';
+import { INJ_ITEM_CONTEXT, INJ_PAGE_ELEMENT } from 'src/app/code-base/injection-tokens';
 import { PageDesignService } from 'src/app/services/page-design.service';
 import { ElementInstance } from 'src/app/code-base/element-instance';
 import { RendererRepository } from 'src/app/code-base/repositories/renderer-repository';
@@ -38,9 +38,10 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
     */
    logicalTreeChange = new EventEmitter<ILogicalTreeChange>(true);
 
-   #dataContext: any;
+   rendererComponentRef: ComponentRef<BaseRenderer>;
 
    @Input() pageElement: ElementInstance;
+   @Input() itemContext: any;
 
    @ViewChild('dummyVcr', { read: ViewContainerRef }) dummyVcr: ViewContainerRef;
    @ViewChildren(RendererChildrenComponent) childrenRenderers: QueryList<RendererChildrenComponent>;
@@ -48,9 +49,8 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
    constructor(
       private cfr: ComponentFactoryResolver,
       private cdr: ChangeDetectorRef,
-      private viewContainerRef: ViewContainerRef,
+      private mainVcr: ViewContainerRef,
       private injector: Injector,
-      private changeDetectorRef: ChangeDetectorRef,
       private parentElementsArea: ElementsAreaComponent,
       private pageDesignService: PageDesignService,
       @SkipSelf() @Host() @Optional() private parentRendererOutlet: RendererOutletComponent,
@@ -63,13 +63,15 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
          .subscribe(_ => {
             this.pageDesignService.collectAllDropListsIds(this.pageElement);
          });
-
-      this.pageDesignService.dataContext.subscribe(dc => this.#dataContext = dc);
    }
    ngAfterViewInit() {
       // we do it here becuase dummyVcr exists now (can't be done in ngOnInit())
       this.pageDesignService.renderMode.subscribe(renderMode => this.redraw(renderMode));
       this.logicalTreeChange.next();
+
+      this.logicalTreeChange.subscribe(_ => {
+         this.rendererComponentRef.instance.logicalTreeChange.next();
+      });
    }
 
 
@@ -84,19 +86,21 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
       const injector = this.getInjector();
 
       // create component
-      const rendererComponentRef = rendererFactory.create(injector);
+      this.rendererComponentRef = rendererFactory.create(injector);
+
+      this.rendererComponentRef.instance.itemContext = this.itemContext;
 
       // handle component's view init just before adding it to view
-      rendererComponentRef.instance.lifecycleEvents.pipe(filter(x => x === 'AfterViewInit')).subscribe(_ => {
-         this.viewContainerRef.createEmbeddedView(this.pageElement.templateRefs[renderMode]);
+      this.rendererComponentRef.instance.lifecycleEvents.pipe(filter(x => x === 'AfterViewInit')).subscribe(_ => {
+         this.mainVcr.createEmbeddedView(this.pageElement.templateRefs[renderMode]);
          this.cdr.detectChanges();
       })
 
       // insert to dummy ViewContainerRef first to trigger ngAfterInit and *renderer-body
-      this.dummyVcr.insert(rendererComponentRef.hostView);
+      this.dummyVcr.insert(this.rendererComponentRef.hostView);
 
       // trigger change detection (since it's called from ngAfterViewInit())
-      this.changeDetectorRef.detectChanges();
+      this.cdr.detectChanges();
    }
 
 

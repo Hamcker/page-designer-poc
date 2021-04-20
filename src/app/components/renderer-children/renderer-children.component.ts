@@ -5,6 +5,9 @@ import { INJ_PAGE_ELEMENT } from 'src/app/code-base/injection-tokens';
 import { ElementInstance } from 'src/app/code-base/element-instance';
 import { DropZoneDirective } from 'src/app/directives/drop-zone.directive';
 import { RendererOutletComponent } from '../renderer-outlet/renderer-outlet.component';
+import { PROP_DATACONTEXT } from 'src/app/code-base/element-defintions/frequent-properties';
+import { EL_BUTTON } from 'src/app/code-base/element-defintions/button';
+import { EL_INPUT } from 'src/app/code-base/element-defintions/input';
 
 @Component({
    selector: 'renderer-children',
@@ -14,6 +17,15 @@ import { RendererOutletComponent } from '../renderer-outlet/renderer-outlet.comp
 export class RendererChildrenComponent implements OnInit {
 
    @Input() slot: string = 'default';
+
+   #asTemplatefor: any[];
+   @Input() set asTemplateFor(value: any[]) {
+      this.#asTemplatefor = value;
+      this.renderChildren();
+   }
+   get asTemplateFor(): any[] {
+      return this.#asTemplatefor;
+   }
 
    constructor(
       @Inject(INJ_PAGE_ELEMENT) private pageElement: ElementInstance,
@@ -38,19 +50,36 @@ export class RendererChildrenComponent implements OnInit {
 
    renderChildren() {
       this.vcr.clear();
-      this.pageElement.children.forEach((child, index) => {
-         const childComponentFactory = this.cfr.resolveComponentFactory(RendererOutletComponent);
 
-         const componentRef = childComponentFactory.create(this.getChildrenInjector());
-         // const componentRef = this.vcr.createComponent(childComponentFactory, index);
+      if (!!this.asTemplateFor && this.pageElement?.children?.length > 0) {
+         this.asTemplateFor.forEach((itemContext, index) => {
+            const childComponentFactory = this.cfr.resolveComponentFactory(RendererOutletComponent);
 
-         // initialize
-         componentRef.instance.pageElement = child;
-         // componentRef.
+            const componentRef = childComponentFactory.create(this.getChildrenInjector());
+            // const componentRef = this.vcr.createComponent(childComponentFactory, index);
 
-         // add to view
-         this.vcr.insert(componentRef.hostView, index);
-      })
+            // initialize
+            componentRef.instance.pageElement = ElementInstance.cloneFrom(this.pageElement.children[0]);
+            // componentRef.instance.pageElement = new ElementInstance(this.pageElement, EL_INPUT);
+            componentRef.instance.itemContext = itemContext;
+
+            // add to view
+            this.vcr.insert(componentRef.hostView, index);
+         });
+
+      } else {
+         this.pageElement.children.forEach((child, index) => {
+            const childComponentFactory = this.cfr.resolveComponentFactory(RendererOutletComponent);
+
+            const componentRef = childComponentFactory.create(this.getChildrenInjector());
+
+            // initialize
+            componentRef.instance.pageElement = child;
+
+            // add to view
+            this.vcr.insert(componentRef.hostView, index);
+         });
+      }
    }
 
    private getChildrenInjector() {
@@ -58,7 +87,7 @@ export class RendererChildrenComponent implements OnInit {
          name: 'Renderer Children Injector',
          parent: this.injector,
          providers: [
-            { provide: CDK_DROP_LIST, useValue: this.parentDropZone }
+            { provide: CDK_DROP_LIST, useValue: this.parentDropZone },
          ]
       })
    }

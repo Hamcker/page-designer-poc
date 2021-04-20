@@ -1,5 +1,5 @@
 import { ElementDefinition } from "../element-definition";
-import { PROP_ID } from "./frequent-properties";
+import { PROP_DATACONTEXT, PROP_ID } from "./frequent-properties";
 import { PropertyPrptotype } from "../property-prototype";
 
 export const EL_Repeater: ElementDefinition = new ElementDefinition({
@@ -10,6 +10,7 @@ export const EL_Repeater: ElementDefinition = new ElementDefinition({
    // maxChildren: 1,
    properties: [
       PROP_ID,
+      PROP_DATACONTEXT,
       new PropertyPrptotype({
          name: 'items',
          editor: 'textbox',
