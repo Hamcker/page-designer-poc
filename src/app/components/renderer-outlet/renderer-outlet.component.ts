@@ -92,6 +92,7 @@ export class RendererOutletComponent implements OnInit, AfterViewInit {
 
       // handle component's view init just before adding it to view
       this.rendererComponentRef.instance.lifecycleEvents.pipe(filter(x => x === 'AfterViewInit')).subscribe(_ => {
+         this.mainVcr.clear();
          this.mainVcr.createEmbeddedView(this.pageElement.templateRefs[renderMode]);
          this.cdr.detectChanges();
       })

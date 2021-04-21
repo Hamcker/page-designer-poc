@@ -3,3 +3,5 @@
 
   <input type="text" [ngModel]="get('value') | async" (ngModelChange)="set('value', $event)" [placeholder]="get('placeholder')">
 </div>
+
+<input *renderer-view="'run'" type="text" [ngModel]="get('value') | async" (ngModelChange)="set('value', $event)" [placeholder]="get('placeholder')">

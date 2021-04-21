@@ -11,7 +11,7 @@
 </div>
 
 <!-- -------------------------------------------------------------------------------------->
-<section class="pd-col col" *renderer-view="'run'">
+<section class="col{{(get('width') | async) ? '-' + (get('width') | async) : '' }}" *renderer-view="'run'">
 
   <renderer-children></renderer-children>
 

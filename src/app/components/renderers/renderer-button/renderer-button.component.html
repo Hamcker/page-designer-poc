@@ -1,10 +1,10 @@
 <div *renderer-view="'design'">
   <renderer-drag-handler></renderer-drag-handler>
   <button class="btn btn-primary">
-    I'm a button
+    {{get('caption') | async}}
   </button>
 </div>
 
 <button class="btn btn-primary" *renderer-view="'run'">
-
+  {{get('caption') | async}}
 </button>

@@ -7,12 +7,12 @@ import { EL_BODY } from 'src/app/code-base/element-defintions/body';
 import { EL_COL } from 'src/app/code-base/element-defintions/col';
 import { EL_INPUT } from 'src/app/code-base/element-defintions/input';
 import { EL_ROW } from 'src/app/code-base/element-defintions/row';
+import { EL_Repeater } from 'src/app/code-base/element-defintions/repeater';
 import { ElementDefinition } from 'src/app/code-base/element-definition';
+import { PROP_DATACONTEXT } from 'src/app/code-base/element-defintions/frequent-properties';
 import { PageDesignService } from 'src/app/services/page-design.service';
 import { take } from 'rxjs/operators';
 import { timer } from 'rxjs';
-import { PROP_DATACONTEXT } from 'src/app/code-base/element-defintions/frequent-properties';
-import { EL_Repeater } from 'src/app/code-base/element-defintions/repeater';
 
 @Component({
    selector: 'app-elements-area',
@@ -120,6 +120,8 @@ export class ElementsAreaComponent implements OnInit {
       // ------------------------------------------------------------------------------------------
 
       this.rootElement = root;
+      // this.rootElement = new ElementInstance(null, EL_BODY);
+
    }
 
    private setupDataContext() {

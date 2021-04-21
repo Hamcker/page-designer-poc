@@ -1,4 +1,8 @@
 <div class="p-2 w-100 h-100">
+  <div class="form-check">
+    <input id="rendermode" type="checkbox" class="form-check-input" [(ngModel)]="isDesignMode" (ngModelChange)="onDesignModeChange($event)">
+    <label for="rendermode" class="form-check-label">Design Mode</label>
+  </div>
   <div class="d-flex border rounded h-100" cdkDropListGroup>
     <app-toolbox [allDropListsIds]="allDropListsIds"></app-toolbox>
     <app-elements-area class="flex-fill" (dropListChange)="allDropListsIds = $event" (layoutChange)="onLayoutJsonChange($event)"></app-elements-area>

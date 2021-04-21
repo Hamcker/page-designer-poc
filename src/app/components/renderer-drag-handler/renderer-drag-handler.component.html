@@ -1,10 +1,11 @@
-<div class="drag-handler" cdkDrag [id]="pageElement.uId" [cdkDragData]="pageElement" [cdkDragDisabled]="dragDisabled" [class.selected]="selected"
-  (click)="onHostClick()">
-  <div class="item-drag-handle d-flex align-items-center" cdkDragHandle>
-    <i *ngIf="!dragDisabled" class="las la-braille me-2"> </i>
-    <i class="las la-times cursor-pointer ms-3" (click)="onRemoveClick()" *ngIf="!dragDisabled"></i>
+<div class="drag-handler" cdkDrag [id]="pageElement.uId" [cdkDragData]="pageElement" [cdkDragDisabled]="dragDisabled" (click)="onHostClick()">
+
+  <div class="item-drag-handle d-inline-flex align-items-baseline rounded-top bg-gradient text-light cursor-pointer"
+    [ngClass]="{'bg-secondary': !selected, 'bg-primary': selected}">
+    <i *ngIf="!dragDisabled" class="las la-braille me-1" cdkDragHandle> </i>
+    <i class="las la-times cursor-pointer me-1" (click)="onRemoveClick()" *ngIf="!dragDisabled"></i>
     {{ pageElement.definition.name }}
-    <span class="ms-5 text-muted" style="font-size: 0.6em;"> {{pageElement.uId}} </span>
+    <span class="mx-2 text-white-50" style="font-size: 0.6em;"> {{pageElement.uId}} </span>
   </div>
 
   <!-- <div class="item-drag-preview" *cdkDragPreview>
